@@ -10,7 +10,7 @@
 
 ## Table of content
 -   [Overview](#overview)
--   [:bulb: Installation and running server](#-installation)
+-   [:bulb: Installation and running server](#bulb-installation-and-running-server)
 
 ## Overview
 
