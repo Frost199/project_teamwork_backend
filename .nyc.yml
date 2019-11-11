@@ -1,0 +1,13 @@
+{
+  "nyc": {
+    "all": true,
+    "include": [
+      "spec/integration/**.js",
+      "spec/unit/**.js"
+    ],
+    "exclude": [
+      // Files to be excluded
+    ],
+    "excludeNodeModules": false
+  }
+}

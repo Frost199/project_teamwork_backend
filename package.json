@@ -4,14 +4,15 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine"
+    "test": "jasmine",
+    "coverage": "istanbul cover jasmine --captureExceptions && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js && rm -rf ./coverage"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
     "coveralls": "^3.0.7",
-    "istanbul": "^0.4.5",
+    "istanbul": "^1.1.0-alpha.1",
     "jasmine": "^3.5.0",
     "supertest": "^4.0.2"
   },
