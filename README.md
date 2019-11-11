@@ -10,14 +10,18 @@
 
 ## Table of content
 -   [Overview](#overview)
--   [🌩 Installation](#-installation)
+-   [🌩🌩🌩🌩🌩:bulb: Installation and running server](#-installation)
 
 ## Overview
 
 This project is an internal social network for employees so they can share their ideas, beliefs, share information
 and also have fun while at work.
 
-## 🌩 Installation
+## 🌩:bulb: Installation and running server
 
 ##### npm
-    npm install jasmine-expect --save-dev
+    npm install
+    nodemon server.js
+    
+##### test
+    npm test or jasmine
