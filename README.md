@@ -10,14 +10,14 @@
 
 ## Table of content
 -   [Overview](#overview)
--   [🌩🌩🌩🌩🌩:bulb: Installation and running server](#-installation)
+-   [:bulb: Installation and running server](#-installation)
 
 ## Overview
 
 This project is an internal social network for employees so they can share their ideas, beliefs, share information
 and also have fun while at work.
 
-## 🌩:bulb: Installation and running server
+## :bulb: Installation and running server
 
 ##### npm
     npm install
