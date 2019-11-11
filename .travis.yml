@@ -5,6 +5,9 @@ env:
 language: node_js
 node_js: "node"
 
+services:
+  - postgresql
+
 cache:
   directories:
     - "node_modules"
@@ -21,3 +24,5 @@ script:
 
 after_script:
   - ./cc-test-reporter after-build -t lcov --exit-code $TRAVIS_TEST_RESULT
+
+after_success: npm run coverage
