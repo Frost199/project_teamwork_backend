@@ -3,7 +3,7 @@ let server;
 
 describe('/', () => {
   beforeEach(() => {
-    server  = require('../../server');
+    server = require('../../server');
   });
 
   afterEach(async () => {

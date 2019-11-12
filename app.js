@@ -9,7 +9,7 @@ const app = express();
 let conString = process.env.TEAMWORK_DATABASE_URL;
 let client = new pg.Client(conString);
 
-client.connect((err) => {
+exports.client = client.connect((err) => {
   if (err)
     return console.error('could not connect to postgres:', err);
   else
