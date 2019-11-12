@@ -13,10 +13,11 @@ const app = express();
 let conString = process.env.TEAMWORK_DATABASE_URL;
 let client = new pg.Client(conString);
 
-client.connect((err) => {
-  if (err)
-    return console.error('could not connect to postgres:', err);
-  else
+exports.client = client.connect((err) => {
+  if (err) {
+    console.error('could not connect to postgres');
+    return err;
+  } else
     console.log('Successfully connected to elephantSQL!');
 });
 
