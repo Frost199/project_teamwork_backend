@@ -10,9 +10,10 @@ let conString = process.env.TEAMWORK_DATABASE_URL;
 let client = new pg.Client(conString);
 
 exports.client = client.connect((err) => {
-  if (err)
-    return console.error(err);
-  else
+  if (err) {
+    console.error('could not connect to postgres');
+    return err;
+  } else
     console.log('Successfully connected to elephantSQL!');
 });
 

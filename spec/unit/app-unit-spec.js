@@ -9,9 +9,7 @@ describe('PostgreSQL failed connection', () => {
 
   it('should fail', function () {
     app.client = client.connect((err) => {
-      if (err) {
-        expect(err).toMatch(/does not exist/);
-      }
+      expect(err).toMatch(/does not exist/);
     });
   });
 });
