@@ -11,7 +11,7 @@ let client = new pg.Client(conString);
 
 exports.client = client.connect((err) => {
   if (err)
-    return console.error('could not connect to postgres');
+    return console.error(err);
   else
     console.log('Successfully connected to elephantSQL!');
 });
