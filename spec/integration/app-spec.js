@@ -7,12 +7,12 @@ describe('/', () => {
   });
 
   afterEach(async () => {
-    await server.close();
+    await server.serverExport.close();
   });
 
   describe('GET /', () => {
     it('should return Hello, welcome', async () => {
-      const res = await request(server).get('/');
+      const res = await request(server.serverExport).get('/');
       expect(res.status).toBe(200);
     });
   });

@@ -1,4 +1,5 @@
 const pg = require('pg');
+const app = require('../../app');
 
 describe('PostgreSQL failed connection', () => {
   //Connecting to database
@@ -6,9 +7,11 @@ describe('PostgreSQL failed connection', () => {
   let client = new pg.Client(conString);
   let errOut = new Error(`could not connect to postgres`);
 
-  it('should fail connecting', function () {
-    client.connect((err) => {
-      expect(err).toEqual(errOut);
+  it('should fail', function () {
+    app.client = client.connect((err) => {
+      if (err) {
+        expect(err).toMatch(/authentication/);
+      }
     });
   });
 });
