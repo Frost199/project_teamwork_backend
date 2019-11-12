@@ -11,6 +11,8 @@ const normalizePort = val => {
   if (port > 0) {
     return port;
   }
+
+  return false;
 };
 
 //normalize and set the port
@@ -60,5 +62,6 @@ const serverExport = server.listen(port);
 
 module.exports = {
   portNormalized: normalizePort,
+  errorHandled: errorHandler,
   serverExport: serverExport,
 };

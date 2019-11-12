@@ -23,9 +23,38 @@ describe('normalizePort: ', () => {
     });
 
     it('should should return false for undefined states', function () {
-      let normalizedValueForInt = server.portNormalized();
+      let negInput = -1;
+      let normalizedValueForInt = server.portNormalized(negInput);
       expect(normalizedValueForInt).toBeFalsy();
     });
   });
 
+});
+
+describe('errorHandle', () => {
+  beforeEach(() => {
+    server = require('../../server');
+  });
+
+  afterEach(async () => {
+    await server.serverExport.close();
+  });
+  describe('when Handled', () => {
+
+    it('should throw error', function () {
+      const err = new Error();
+      err.syscall = 'close';
+      expect(() => { server.errorHandled(err.syscall); }).toThrow();
+    });
+
+    it('should throw error for error codes', function () {
+      const err = new Error();
+      // err.code = ['EACCES', 'EADDRINUSE'];
+      err.code = 'EADDRINUSE';
+      expect(() => { server.errorHandled(err.code); }).toThrow();
+      // err.code.forEach(e => {
+      //   expect(() => { server.errorHandled(e); }).toThrow();
+      // });
+    });
+  });
 });
