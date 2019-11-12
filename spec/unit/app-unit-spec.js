@@ -10,7 +10,7 @@ describe('PostgreSQL failed connection', () => {
   it('should fail', function () {
     app.client = client.connect((err) => {
       if (err) {
-        expect(err).toMatch(/authentication/);
+        expect(err).toEqual(errOut);
       }
     });
   });
