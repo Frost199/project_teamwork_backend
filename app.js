@@ -13,14 +13,6 @@ const app = express();
 let conString = process.env.TEAMWORK_DATABASE_URL;
 let client = new pg.Client(conString);
 
-exports.client = client.connect((err) => {
-  if (err) {
-    console.error('could not connect to postgres');
-    return err;
-  } else
-    console.log('Successfully connected to elephantSQL!');
-});
-
 //avoiding CORS(Cross Origin Resource Sharing), this adds to the headed
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -29,10 +21,6 @@ app.use((req, res, next) => {
     ' Authorization');
   res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, PATCH, OPTIONS');
   next();
-});
-
-app.get('/', (req, res) => {
-  res.send('Hello, welcome');
 });
 
 app.use(bodyParser.json());
