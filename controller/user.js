@@ -6,6 +6,8 @@ const libs = require('../util/libs');
 moment().format();
 
 exports.signup = async (req, res, next) => {
+  let ip = req.headers['x-real-ip'] || req.connection.remoteAddress;
+
   // check if email is a valid type
   if (!libs.isValidEmail(req.body.email)) {
     return res.status(400).json({
