@@ -46,15 +46,5 @@ describe('errorHandle', () => {
       err.syscall = 'close';
       expect(() => { server.errorHandled(err.syscall); }).toThrow();
     });
-
-    it('should throw error for error codes', function () {
-      const err = new Error();
-      // err.code = ['EACCES', 'EADDRINUSE'];
-      err.code = 'EADDRINUSE';
-      expect(() => { server.errorHandled(err.code); }).toThrow();
-      // err.code.forEach(e => {
-      //   expect(() => { server.errorHandled(e); }).toThrow();
-      // });
-    });
   });
 });

@@ -1,18 +1,15 @@
-const { Pool } = require('pg');
+const libs = require('../util/libs');
 const dotenv = require('dotenv');
 
 dotenv.config();
 
-const pool = new Pool({
-  user: 'iopnxytv',
-  host: 'salt.db.elephantsql.com',
-  database: 'iopnxytv',
-  password: 'gYVfD_df_4vqLi87UTx6u8JPKz8jkhdF',
-  port: 5432,
-});
+const pool = libs.databaseEnv();
 
 pool.on('connect', () => {
-  console.log('connected to the db');
+  if (process.env.NODE_ENV !== 'testing')
+    console.log('connected to the db');
+  else
+    console.log('connected to the test db');
 });
 
 /**
@@ -20,19 +17,20 @@ pool.on('connect', () => {
  */
 const createTables = () => {
   const queryText =
-    `CREATE TABLE IF NOT EXISTS
-      Employee (
-        id SERIAL PRIMARY KEY,
-        firstName VARCHAR(128) NOT NULL,
-        lastName VARCHAR(128) NOT NULL,
-        email VARCHAR(128) UNIQUE NOT NULL,
-        password VARCHAR(128) NOT NULL,
-        gender VARCHAR(128) NOT NULL,
-        jobRole VARCHAR(128) NOT NULL,
-        department VARCHAR(128) NOT NULL,
-        address VARCHAR(256) NOT NULL,
-        created_date TIMESTAMP
-      )`;
+      `CREATE TABLE IF NOT EXISTS
+           Employee
+       (
+           id           SERIAL PRIMARY KEY,
+           firstName    VARCHAR(128)        NOT NULL,
+           lastName     VARCHAR(128)        NOT NULL,
+           email        VARCHAR(128) UNIQUE NOT NULL,
+           password     VARCHAR(128)        NOT NULL,
+           gender       VARCHAR(128)        NOT NULL,
+           jobRole      VARCHAR(128)        NOT NULL,
+           department   VARCHAR(128)        NOT NULL,
+           address      VARCHAR(256)        NOT NULL,
+           created_date TIMESTAMP
+       )`;
 
   pool.query(queryText)
     .then((res) => {
