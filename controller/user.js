@@ -41,7 +41,7 @@ exports.signup = async (req, res, next) => {
         if (error.routine === '_bt_check_unique') {
           return res.status(400).json({
             status: 'error',
-            data: 'User with that EMAIL already exist',
+            error: 'User with that EMAIL already exist',
           });
         }
 

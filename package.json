@@ -4,8 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "jasmine",
-    "coverage": "istanbul cover jasmine --captureExceptions && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
+    "test": "NODE_ENV=testing jasmine --random=false",
+    "coverage": "NODE_ENV=testing istanbul cover jasmine --random=false --captureExceptions && cat ./coverage/lcov.info | ./node_modules/coveralls/bin/coveralls.js"
   },
   "keywords": [],
   "author": "",
