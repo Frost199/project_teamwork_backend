@@ -85,22 +85,26 @@ const validateInput = (method) => {
         }).withMessage('Malformed request'),
     ];
     }
+
+    case 'loginUser': {
+      return [
+        body('email', 'Invalid email')
+        .exists()
+        .withMessage('email is required')
+        .isEmail()
+        .normalizeEmail(),
+
+      body('password')
+        .exists()
+        .withMessage('Password is required')
+        .isLength({ min: 6 })
+        .withMessage('Password should be at least 6 characters')
+        .escape(),
+      ];
+    }
   }
 };
 
-// const handleValidationErrors = (req, res, next) => {
-//   const errors = validationResult(req);
-//   if (!errors.isEmpty()) {
-//     let error = errors.array();
-//     let errMsg = [];
-//     error.forEach(err => errMsg.push(err.msg));
-//     return res.status(422).json({ errors: errMsg });
-//   }
-//
-//   // next();
-// };
-
 module.exports = {
   validatedInput: validateInput,
-  // handledValidationErrors: handleValidationErrors,
 };

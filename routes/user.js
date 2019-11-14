@@ -1,8 +1,10 @@
 const express = require('express');
 const userController  = require('../controller/user');
+const adminController  = require('../controller/admin');
 const validator = require('../middleware/validate_and_sanitize');
 const router = express.Router();
 
-router.post('/create-user', validator.validatedInput('createUser'), userController.signup);
+router.post('/create-user', validator.validatedInput('createUser'), adminController.signup);
+router.post('/signin', validator.validatedInput('loginUser'), userController.login);
 
 module.exports = router;
