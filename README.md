@@ -10,18 +10,43 @@
 
 ## Table of content
 -   [Overview](#overview)
--   [:bulb: Installation and running server](#bulb-installation-and-running-server)
+-   [:gear: Installation and running server](#gear-installation-and-running-server)
+-   [:key: Database](#key-Database)
 
 ## Overview
 
 This project is an internal social network for employees so they can share their ideas, beliefs, share information
 and also have fun while at work.
 
-## :bulb: Installation and running server
+## :gear: Installation and running server
 
-##### npm
+#### npm
     npm install
     nodemon server.js
     
 ##### test
-    npm test or jasmine
+###### Using env
+The NODE_ENV=testing has to be added to the terminal while running the test to specify
+that you will be using the test database
+    NODE_ENV=testing npm test or jasmine
+
+## :gear: Database
+##### Create user table
+change directory to the models folder
+    
+    node user createTables
+
+##### Drop user table
+change directory to the models folder
+    
+    node user dropTables
+##### Admin init
+###### install make-runnable
+    npm install --save-dev make-runnable
+For an actual database, you might not need to specify the node environment
+
+    node user createAdmin
+Fill your parameterized values for the database
+For a test database, you use the NODE_ENV=testing
+    
+    NODE_ENV=testing node user createAdmin
