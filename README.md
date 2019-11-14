@@ -28,6 +28,7 @@ and also have fun while at work.
 ###### Using env
 The NODE_ENV=testing has to be added to the terminal while running the test to specify
 that you will be using the test database
+    
     NODE_ENV=testing npm test or jasmine
 
 ## :key: Database
