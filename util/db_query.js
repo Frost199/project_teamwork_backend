@@ -5,13 +5,4 @@ dotenv.config();
 
 const pool = libs.databaseEnv();
 
-exports.query = (text, params) =>
-  new Promise((resolve, reject) => {
-    pool.query(text, params)
-      .then((res) => {
-        resolve(res);
-      })
-      .catch((err) => {
-        reject(err);
-      });
-  });
+exports.query = (text, params) => pool.query(text, params);
