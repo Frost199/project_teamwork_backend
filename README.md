@@ -9,11 +9,11 @@
 [![Coverage Status](https://coveralls.io/repos/github/Frost199/project_teamwork_backend/badge.svg?branch=master)](https://coveralls.io/github/Frost199/project_teamwork_backend?branch=master)
 
 ## Table of content
--   [Overview](#overview)
+-   [:notebook_with_decorative_cover: Overview](#notebook_with_decorative_cover-overview)
 -   [:gear: Installation and running server](#gear-installation-and-running-server)
 -   [:key: Database](#key-database)
 
-## Overview
+## :notebook_with_decorative_cover: Overview
 
 This project is an internal social network for employees so they can share their ideas, beliefs, share information
 and also have fun while at work.
