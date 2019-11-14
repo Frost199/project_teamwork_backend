@@ -1,4 +1,7 @@
 const { Pool } = require('pg');
+const dotenv = require('dotenv');
+
+dotenv.config();
 
 exports.isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
 

@@ -5,7 +5,7 @@ describe('normalizePort: ', () => {
     server = require('../../server');
   });
 
-  afterEach(async () => {
+  afterAll(async () => {
     await server.serverExport.close();
   });
 
