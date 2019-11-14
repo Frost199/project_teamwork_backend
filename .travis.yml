@@ -11,6 +11,7 @@ env:
     - TEAMWORK_DATABASE_TEST=wubncfbz
     - TEAMWORK_DATABASE_PASSWORD_TEST=8t0VtXbVQQmAIfnmax182SETdN6RgLmp
     - NODE_ENV=testing
+    - JWT_TOKEN_SECRET=asknfjnuvjdvjdnsjnaoniwenqndnoanncoo2346368381yva2f5c815c03053b089ace56bc6b4e57704d23ebff7e0a+a837995fc8f531be1835f76cc1087c922a4c9d197b4d4cafc6c
 
 language: node_js
 node_js: "node"
