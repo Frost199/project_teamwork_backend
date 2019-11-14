@@ -1,5 +1,4 @@
 const request = require('supertest');
-const bcrypt = require('bcrypt');
 const db = require('../../util/db_query');
 const dotenv = require('dotenv');
 
@@ -20,79 +19,61 @@ describe('Check if user can ', () => {
     await db.query(`DELETE FROM Employee WHERE isAdmin=FALSE`);
   });
 
-  describe('POST /api/v1/auth/create-user', () => {
+  describe('POST /api/v1/auth/signin', () => {
 
-    it('should return hashed password', async () => {
-      await request(server.serverExport)
-        .post('/api/v1/auth/create-user')
+    it('should return a 422 for malformed requests', async () => {
+      const res = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
         .send({
-          email: 'test@mail.com',
+          email: 'test@mail',
           password: 'western',
         });
-      bcrypt.hash('western', 10)
-        .then((value => expect(value).not.toBeNaN()));
+      expect(res.status).toBe(422);
+      expect(res.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
     });
 
-    it('should return success for creating user', async () => {
-      process.env.TEAMWORK_DATABASE_PASSWORD_TEST = '1234';
+    it('should return a 401 error and user not found', async () => {
       const res = await request(server.serverExport)
-        .post('/api/v1/auth/create-user')
+        .post('/api/v1/auth/signin')
         .send({
-          firstName: 'Mathew',
-          lastName: 'John',
-          gender: 'Male',
-          jobRole: 'Senior Marketer',
-          department: 'Accounting',
-          address: '20, Adeola Odekun, VI Lagos',
           email: 'test@mail.com',
           password: 'western',
         });
-      expect(res.status).toBe(201);
+      expect(res.status).toBe(401);
+      expect(res.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should return a 401 error and incorrect password', async () => {
+      const res = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'western',
+        });
+      expect(res.status).toBe(401);
+      expect(res.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+      expect(res.body).toEqual(jasmine.objectContaining({
+        error: 'Incorrect password',
+      }));
+    });
+
+    it('should return a 200 success for login user', async () => {
+      const res = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      expect(res.status).toBe(200);
       expect(res.body).toEqual(jasmine.objectContaining({
         status: 'success',
       }));
-
-      const resAgain = await request(server.serverExport)
-        .post('/api/v1/auth/create-user')
-        .send({
-          firstName: 'Mathew',
-          lastName: 'John',
-          gender: 'Male',
-          jobRole: 'Senior Marketer',
-          department: 'Accounting',
-          address: '20, Adeola Odekun, VI Lagos',
-          email: 'test@mail.com',
-          password: 'western',
-        });
-      expect(resAgain.status).toBe(400);
-      expect(resAgain.body).toEqual(jasmine.objectContaining({
-        status: 'error',
-      }));
-      expect(resAgain.body).toEqual(jasmine.objectContaining({
-        error: 'User with that EMAIL already exist',
-      }));
     });
-    //
-    // it('should fail to create user', async () =>  {
-    //   const res = await request(server.serverExport)
-    //     .post('/api/v1/auth/create-user')
-    //     .send({
-    //       firstName: 'Mathew',
-    //       lastName: 'John',
-    //       gender: 'Male',
-    //       jobRole: 'Senior Marketer',
-    //       department: 'Accounting',
-    //       address: '20, Adeola Odekun, VI Lagos',
-    //       email: 'test@mail.com',
-    //       password: 'western',
-    //     });
-    //   expect(res.status).toBe(500);
-    //   expect(res.body).toEqual(jasmine.objectContaining({
-    //     status: 'error',
-    //   }));
-    //   expect(res.body).toEqual(jasmine.objectContaining({
-    //     error: 'failed to create user',
-    //   }));
-    // });
   });
 });
