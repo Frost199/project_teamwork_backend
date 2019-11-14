@@ -11,7 +11,7 @@
 ## Table of content
 -   [Overview](#overview)
 -   [:gear: Installation and running server](#gear-installation-and-running-server)
--   [:key: Database](#key-Database)
+-   [:key: Database](#key-database)
 
 ## Overview
 
@@ -30,7 +30,7 @@ The NODE_ENV=testing has to be added to the terminal while running the test to s
 that you will be using the test database
     NODE_ENV=testing npm test or jasmine
 
-## :gear: Database
+## :key: Database
 ##### Create user table
 change directory to the models folder
     
