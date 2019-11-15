@@ -80,7 +80,8 @@ const validateInput = (method) => {
 
       body().custom(body => {
           const keys = ['firstName', 'lastName', 'email', 'password',
-            'gender', 'jobRole', 'department', 'address',];
+            'gender', 'jobRole', 'department', 'address',
+          ];
           return Object.keys(body).every(key => keys.includes(key));
         }).withMessage('Malformed request'),
     ];
@@ -100,6 +101,22 @@ const validateInput = (method) => {
         .isLength({ min: 6 })
         .withMessage('Password should be at least 6 characters')
         .escape(),
+      ];
+    }
+
+    case 'gifAdd': {
+      return [
+        body('title', 'Invalid email')
+        .exists()
+        .withMessage('title is required')
+        .trim()
+        .escape(),
+
+        body('gif', 'Please upload your file in gif')
+          .custom((value, filename) => {
+            let extension = (path.extname(filename)).toLowerCase();
+            return extension === '.gif';
+          }),
       ];
     }
   }

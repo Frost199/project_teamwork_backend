@@ -23,8 +23,16 @@ describe('Check if Admin can ', () => {
   describe('POST /api/v1/auth/create-user', () => {
 
     it('should return hashed password', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
       await request(server.serverExport)
         .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token })
         .send({
           email: 'test@mail.com',
           password: 'western',
@@ -33,10 +41,85 @@ describe('Check if Admin can ', () => {
         .then((value => expect(value).not.toBeNaN()));
     });
 
+    it('should prevent unauthorized users', async () => {
+      const adminResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const adminToken = adminResponse.body.data.token;
+      await request(server.serverExport)
+        .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + adminToken })
+        .send({
+          firstName: 'Mathew',
+          lastName: 'John',
+          gender: 'Male',
+          jobRole: 'Senior Marketer',
+          department: 'Accounting',
+          address: '20, Adeola Odekun, VI Lagos',
+          email: 'test@mail.com',
+          password: 'western',
+        });
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'test@mail.com',
+          password: 'western',
+        });
+      const token = loginResponse.body.data.token;
+      const response = await request(server.serverExport)
+        .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          firstName: 'Mathew',
+          lastName: 'John',
+          gender: 'Male',
+          jobRole: 'Senior Marketer',
+          department: 'Accounting',
+          address: '20, Adeola Odekun, VI Lagos',
+          email: 'test@mail.com',
+          password: 'western',
+        });
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        error: 'Unauthorized User',
+      }));
+    });
+
+    it('should return an invalid request', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      const response = await request(server.serverExport)
+        .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token + 'ggggg' })
+        .send({
+          email: 'test@mail.com',
+          password: 'western',
+        });
+      expect(response.status).toBe(401);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        error: 'Invalid request',
+      }));
+    });
+
     it('should return success for creating user', async () => {
-      process.env.TEAMWORK_DATABASE_PASSWORD_TEST = '1234';
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
       const res = await request(server.serverExport)
         .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token })
         .send({
           firstName: 'Mathew',
           lastName: 'John',
@@ -54,6 +137,7 @@ describe('Check if Admin can ', () => {
 
       const resAgain = await request(server.serverExport)
         .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token })
         .send({
           firstName: 'Mathew',
           lastName: 'John',
