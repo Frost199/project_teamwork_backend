@@ -20,7 +20,7 @@ pool.on('connect', () => {
 /**
  * Create Users Tables
  */
-const createTables = () => {
+const createTable = () => {
   const queryText =
       `CREATE TABLE IF NOT EXISTS
            Employee
@@ -52,7 +52,7 @@ const createTables = () => {
 /**
  * Drop USERS Tables
  */
-const dropTables = () => {
+const dropTable = () => {
   const queryText = 'DROP TABLE IF EXISTS Employee';
   pool.query(queryText)
     .then((res) => {
@@ -173,8 +173,8 @@ pool.on('remove', () => {
 });
 
 module.exports = {
-  createTables,
-  dropTables,
+  createTable,
+  dropTable,
   createAdmin,
 };
 
