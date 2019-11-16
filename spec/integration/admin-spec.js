@@ -42,6 +42,8 @@ describe('Check if Admin can ', () => {
     });
 
     it('should prevent unauthorized users', async () => {
+
+      //Admin Logs in
       const adminResponse = await request(server.serverExport)
         .post('/api/v1/auth/signin')
         .send({
@@ -49,6 +51,8 @@ describe('Check if Admin can ', () => {
           password: 'qwerty',
         });
       const adminToken = adminResponse.body.data.token;
+
+      //Admin creates a user
       await request(server.serverExport)
         .post('/api/v1/auth/create-user')
         .set({ Authorization: 'jwt ' + adminToken })
@@ -62,6 +66,8 @@ describe('Check if Admin can ', () => {
           email: 'test@mail.com',
           password: 'western',
         });
+
+      //created user logs in
       const loginResponse = await request(server.serverExport)
         .post('/api/v1/auth/signin')
         .send({
@@ -69,6 +75,8 @@ describe('Check if Admin can ', () => {
           password: 'western',
         });
       const token = loginResponse.body.data.token;
+
+      // Created user wants to create a new user
       const response = await request(server.serverExport)
         .post('/api/v1/auth/create-user')
         .set({ Authorization: 'jwt ' + token })
@@ -134,7 +142,30 @@ describe('Check if Admin can ', () => {
       expect(res.body).toEqual(jasmine.objectContaining({
         status: 'success',
       }));
+    });
 
+    it('should show error user email already exists', async () => {
+
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      await request(server.serverExport)
+        .post('/api/v1/auth/create-user')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          firstName: 'Mathew',
+          lastName: 'John',
+          gender: 'Male',
+          jobRole: 'Senior Marketer',
+          department: 'Accounting',
+          address: '20, Adeola Odekun, VI Lagos',
+          email: 'test@mail.com',
+          password: 'western',
+        });
       const resAgain = await request(server.serverExport)
         .post('/api/v1/auth/create-user')
         .set({ Authorization: 'jwt ' + token })
