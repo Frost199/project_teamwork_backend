@@ -9,7 +9,7 @@ exports.userAuth = (req, res, next) => {
     const token = req.headers.authorization.split(' ')[1];
     const decodeToken = jwt.verify(token, JWT_SECRET_TOKEN);
     const userId = decodeToken.userId;
-    if (req.body.userId && req.body.userId !== userId)
+    if (!userId)
       return res.status(401).json({
           status: 'error',
           error: 'Invalid user ID',
