@@ -116,7 +116,7 @@ describe('check if user can', () => {
       }));
     });
 
-    it('should send response of 401 for article not found', async () => {
+    it('should send response of 404 for article not found', async () => {
       const loginResponse = await request(server.serverExport)
         .post('/api/v1/auth/signin')
         .send({
@@ -139,9 +139,64 @@ describe('check if user can', () => {
           title: 'Hi Madam',
           article: 'lets talk wigs',
         });
-      expect(response.status).toBe(401);
+      expect(response.status).toBe(404);
       expect(response.body).toEqual(jasmine.objectContaining({
         status: 'error',
+      }));
+    });
+  });
+
+  describe('DELETE /api/v1/articles/:id', () => {
+
+    it('should send response of 404 for article not found', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+
+      const response = await request(server.serverExport)
+        .delete(`/api/v1/articles/5000`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should send response of 200 for deleting an article', async () => {
+      const loginResponseDel = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const tokenToPost = loginResponseDel.body.data.token;
+      const articleResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + tokenToPost })
+        .send({
+          title: 'Hello Entertainment',
+          article: 'Write on Entertainment today, its very cool',
+        });
+
+      const articleId = articleResponse.body.data.articleId;
+
+      const response = await request(server.serverExport)
+        .delete(`/api/v1/articles/${articleId}`)
+        .set({ Authorization: 'jwt ' + tokenToPost });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'success',
       }));
     });
   });
