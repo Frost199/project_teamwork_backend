@@ -1,5 +1,4 @@
-const { body, oneOf } = require('express-validator');
-const { validationResult } = require('express-validator');
+const { body } = require('express-validator');
 
 const validateInput = (method) => {
   switch (method) {
@@ -106,7 +105,7 @@ const validateInput = (method) => {
 
     case 'gifAdd': {
       return [
-        body('title', 'Invalid email')
+        body('title')
         .exists()
         .withMessage('title is required')
         .trim()
@@ -117,6 +116,26 @@ const validateInput = (method) => {
             let extension = (path.extname(filename)).toLowerCase();
             return extension === '.gif';
           }),
+      ];
+    }
+
+    case 'articleAdd': {
+      return [
+        body('title')
+        .exists()
+        .withMessage('title is required')
+        .isLength({ min: 1 })
+        .withMessage('article title should be at least 1 characters')
+        .trim()
+        .escape(),
+
+      body('article')
+        .exists()
+        .withMessage('article content is required')
+        .isLength({ min: 1 })
+        .withMessage('article should be at least 1 characters')
+        .trim()
+        .escape(),
       ];
     }
   }

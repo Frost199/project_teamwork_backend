@@ -7,6 +7,7 @@ const path = require('path');
 //Routes
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gif');
+const articleRoutes = require('./routes/article');
 
 dotenv.config();
 const app = express();
@@ -29,5 +30,6 @@ app.use(bodyParser.json());
 app.use('/gifs', express.static(path.join(__dirname, 'gifs')));
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/gifs', gifRoutes);
+app.use('/api/v1/articles', articleRoutes);
 
 module.exports = app;
