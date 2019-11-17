@@ -84,7 +84,7 @@ exports.modifyArticle = (req, res, next) => {
   result
     .then((value) => {
       if (!value.rows.length)
-        return res.status(401).json({
+        return res.status(404).json({
           status: 'error',
           error: 'Article not found!',
         });
@@ -120,4 +120,47 @@ exports.modifyArticle = (req, res, next) => {
         status: 'error',
         error: 'Article not found!',
       }));
+};
+
+exports.deleteArticle = (req, res, next) => {
+
+  const parameterId = req.params.id;
+
+  const conn = `SELECT *
+                FROM Article
+                WHERE id = $1`;
+  const result = db.query(conn, [parameterId]);
+  result
+    .then((dbResult) => {
+      if (!dbResult.rows.length)
+        return res.status(404).json({
+          status: 'error',
+          error: 'Article not found!',
+        });
+      const newConn = `DELETE FROM Article WHERE id= $1`;
+      const parameterValues = [
+        dbResult.rows[0].id,
+      ];
+      const newResult = db.query(newConn, parameterValues);
+      newResult
+        .then(() =>
+          res.status(200).json({
+            status: 'success',
+            data: {
+              message: 'Article successfully deleted!',
+            },
+          }))
+        .catch(() => {
+          res.status(500).json({
+            status: 'error',
+            error: 'Cannot delete article',
+          });
+        });
+    })
+    .catch(() => {
+      res.status(500).json({
+            status: 'error',
+            error: 'Cannot delete article',
+          });
+    });
 };

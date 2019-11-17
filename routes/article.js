@@ -15,4 +15,7 @@ router.post('/', auth.userAuth, validator.validatedInput('articleAdd'),
 router.patch('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.modifyArticle);
 
+//Delete Article
+router.delete('/:id', auth.userAuth, articleController.deleteArticle);
+
 module.exports = router;
