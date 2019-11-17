@@ -12,7 +12,7 @@ router.post('/', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.createArticle);
 
 //Modify Article
-router.post('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
+router.patch('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.modifyArticle);
 
 module.exports = router;
