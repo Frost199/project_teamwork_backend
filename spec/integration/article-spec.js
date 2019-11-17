@@ -41,7 +41,7 @@ describe('check if user can', () => {
       }));
     });
 
-    it('should throw a 422 error for malfiormed json and invalidation parameters', async () => {
+    it('should throw a 422 error for malformed json and invalidation parameters', async () => {
       const loginResponse = await request(server.serverExport)
         .post('/api/v1/auth/signin')
         .send({
@@ -57,6 +57,89 @@ describe('check if user can', () => {
           article: null,
         });
       expect(response.status).toBe(422);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+  });
+
+  describe('PATCH /api/v1/articles/:id', () => {
+    it('should throw a 422 error for malformed json and invalid', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      const response = await request(server.serverExport)
+        .patch('/api/v1/articles/1')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: '',
+          article: null,
+        });
+      expect(response.status).toBe(422);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should send response of 201 for updating article', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      const articleResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+
+      const articleId = articleResponse.body.data.articleId;
+
+      const response = await request(server.serverExport)
+        .patch(`/api/v1/articles/${articleId}`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hi Madam',
+          article: 'lets talk wigs',
+        });
+      expect(response.status).toBe(200);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+
+    it('should send response of 401 for article not found', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+
+      const response = await request(server.serverExport)
+        .patch(`/api/v1/articles/5000`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hi Madam',
+          article: 'lets talk wigs',
+        });
+      expect(response.status).toBe(401);
       expect(response.body).toEqual(jasmine.objectContaining({
         status: 'error',
       }));

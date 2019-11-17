@@ -7,8 +7,12 @@ const auth = require('../middleware/auth');
 
 const router = express.Router();
 
-//Create New thing
+//Create New Article
 router.post('/', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.createArticle);
+
+//Modify Article
+router.patch('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
+  articleController.modifyArticle);
 
 module.exports = router;
