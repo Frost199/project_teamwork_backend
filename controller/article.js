@@ -58,3 +58,6 @@ exports.createArticle = (req, res, next) => {
         error: 'Cannot store article',
       }));
 };
+
+exports.modifyArticle = (req, res, next) => {
+};
