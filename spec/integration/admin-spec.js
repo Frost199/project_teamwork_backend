@@ -103,10 +103,10 @@ describe('Check if Admin can ', () => {
           email: 'emmaldini12@gmail.com',
           password: 'qwerty',
         });
-      const token = loginResponse.body.data.token;
+      const jwtToken = loginResponse.body.data.token;
       const response = await request(server.serverExport)
         .post('/api/v1/auth/create-user')
-        .set({ Authorization: 'jwt ' + token + 'addedtotoken' })
+        .set({ Authorization: 'jwt ' + jwtToken + 'addedtotoken' })
         .send({
           email: 'test@mail.com',
           password: 'western',
