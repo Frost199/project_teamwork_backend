@@ -22,7 +22,7 @@ exports.createArticle = (req, res, next) => {
     });
   }
 
-  //Get the user Id from the database
+  //Get the user Id
   const token = req.headers.authorization.split(' ')[1];
   const decodeToken = jwt.verify(token, JWT_SECRET_TOKEN);
   const userId = decodeToken.userId;
@@ -163,4 +163,79 @@ exports.deleteArticle = (req, res, next) => {
             error: 'Cannot delete article',
           });
     });
+};
+
+exports.commentArticle = (req, res, next) => {
+
+  //check if comment is valid in the body
+  const reqErrors = validationResult(req);
+  if (!reqErrors.isEmpty()) {
+    let error = reqErrors.array();
+    let errMessage = [];
+    error.forEach(err => errMessage.push(err.msg));
+    return res.status(422).json({
+      status: 'error',
+      error: errMessage,
+    });
+  }
+
+  //Get the user Id
+  const token = req.headers.authorization.split(' ')[1];
+  const decodeToken = jwt.verify(token, JWT_SECRET_TOKEN);
+
+  const userId = decodeToken.userId;
+  const comment  = req.body.comment;
+
+  // Get Article from the database
+  const parameterId = req.params.id;
+
+  const conn = `SELECT *
+                FROM Article
+                WHERE id = $1`;
+  const result = db.query(conn, [parameterId]);
+  result
+    .then(value => {
+      if (!value.rows.length)
+        return res.status(404).json({
+          status: 'error',
+          error: 'Article not found!',
+        });
+      const { id: articleId, title: articleTitle, article: article } = value.rows[0];
+      const newConn = `INSERT INTO ArticleComment (userId, articleId, 
+                            comment, created_date) VALUES ($1, $2, $3, $4) RETURNING *`;
+      const newConnValues = [
+        userId,
+        articleId,
+        comment,
+        moment(new Date()),
+      ];
+      const commentResult = db.query(newConn, newConnValues);
+      commentResult
+        .then((responseCommentResult) => {
+          const { id: commentId, comment: comment,
+            created_date: createdOn, } = responseCommentResult.rows[0];
+          return res.status(201).json({
+            status: 'success',
+            data: {
+              message: 'Comment successfully created',
+              createdOn: createdOn,
+              articleTitle: articleTitle,
+              article: article,
+              commentId: commentId,
+              comment: comment,
+            },
+          });
+        })
+        .catch(() =>
+          res.status(500).json({
+            status: 'error',
+            error: 'Cannot store comment',
+          }));
+    })
+    .catch(() =>
+      res.status(500).json({
+        status: 'error',
+        error: 'Database connection issues',
+      })
+    );
 };

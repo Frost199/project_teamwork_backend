@@ -200,4 +200,98 @@ describe('check if user can', () => {
       }));
     });
   });
+
+  describe('POST /api/v1/articles/:articleId/comment', () => {
+    it('should throw a 422 error for empty comment', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create an article
+      const token = loginResponse.body.data.token;
+      const articleCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
+      // Trying to paste a null comment
+      const response = await request(server.serverExport)
+        .post(`/api/v1/articles/${articleIdFromResponse}/comment`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          comment: null,
+        });
+      expect(response.status).toBe(422);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should throw a 404 error, article not found', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+
+      const response = await request(server.serverExport)
+        .post(`/api/v1/articles/5000/comment`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          comment: 'lets talk wigs',
+        });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should show a 201 for comment successfully added', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create an article
+      const token = loginResponse.body.data.token;
+      const articleCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
+      // Trying to paste a null comment
+      const response = await request(server.serverExport)
+        .post(`/api/v1/articles/${articleIdFromResponse}/comment`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          comment: 'I will have to start with football',
+        });
+      expect(response.status).toBe(201);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+  });
 });

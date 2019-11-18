@@ -12,17 +12,17 @@ pool.on('connect', () => {
 });
 
 /**
- * Create Gif Tables
+ * Create ArticleComment Tables
  */
 const createTable = () => {
   const queryText =
       `CREATE TABLE IF NOT EXISTS
-           Article
+           ArticleComment
        (
            id           SERIAL PRIMARY KEY,
            userId    INTEGER        NOT NULL,
-           title     TEXT        NOT NULL,
-           article        TEXT NOT NULL,
+           articleId    INTEGER        NOT NULL,
+           comment     TEXT        NOT NULL,
            created_date TIMESTAMP
        )`;
 
@@ -38,10 +38,10 @@ const createTable = () => {
 };
 
 /**
- * Drop Gif Tables
+ * Drop ArticleComment Tables
  */
 const dropTable = () => {
-  const queryText = 'DROP TABLE IF EXISTS Article';
+  const queryText = 'DROP TABLE IF EXISTS ArticleComment';
   pool.query(queryText)
     .then((res) => {
       console.log('Table dropped');
