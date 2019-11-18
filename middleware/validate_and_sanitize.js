@@ -110,12 +110,6 @@ const validateInput = (method) => {
         .withMessage('title is required')
         .trim()
         .escape(),
-
-        body('gif', 'Please upload your file in gif')
-          .custom((value, filename) => {
-            let extension = (path.extname(filename)).toLowerCase();
-            return extension === '.gif';
-          }),
       ];
     }
 
