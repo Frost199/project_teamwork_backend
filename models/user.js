@@ -56,7 +56,7 @@ const dropTable = () => {
   const queryText = 'DROP TABLE IF EXISTS Employee';
   pool.query(queryText)
     .then((res) => {
-      console.log(res);
+      console.log('Table dropped');
       pool.end();
     })
     .catch((err) => {

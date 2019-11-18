@@ -18,4 +18,8 @@ router.patch('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
 //Delete Article
 router.delete('/:id', auth.userAuth, articleController.deleteArticle);
 
+//Comment on Article
+router.post('/:id/comment', auth.userAuth, validator.validatedInput('articleComment'),
+  articleController.commentArticle);
+
 module.exports = router;

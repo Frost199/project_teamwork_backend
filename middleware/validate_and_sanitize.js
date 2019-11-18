@@ -119,7 +119,7 @@ const validateInput = (method) => {
         .exists()
         .withMessage('title is required')
         .isLength({ min: 1 })
-        .withMessage('article title should be at least 1 characters')
+        .withMessage('article title should be at least 1 character')
         .trim()
         .escape(),
 
@@ -127,7 +127,19 @@ const validateInput = (method) => {
         .exists()
         .withMessage('article content is required')
         .isLength({ min: 1 })
-        .withMessage('article should be at least 1 characters')
+        .withMessage('article should be at least 1 character')
+        .trim()
+        .escape(),
+      ];
+    }
+
+    case 'articleComment': {
+      return [
+        body('comment')
+        .exists()
+        .withMessage('Comment is required')
+        .isLength({ min: 1 })
+        .withMessage('Comment should be at least 1 character')
         .trim()
         .escape(),
       ];
