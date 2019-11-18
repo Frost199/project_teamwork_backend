@@ -144,6 +144,18 @@ const validateInput = (method) => {
         .escape(),
       ];
     }
+
+    case 'gifComment': {
+      return [
+        body('comment')
+        .exists()
+        .withMessage('Comment is required')
+        .isLength({ min: 1 })
+        .withMessage('Comment should be at least 1 character')
+        .trim()
+        .escape(),
+      ];
+    }
   }
 };
 
