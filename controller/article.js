@@ -188,7 +188,6 @@ exports.commentArticle = (req, res, next) => {
 
   // Get Article from the database
   const parameterId = req.params.id;
-
   const conn = `SELECT *
                 FROM Article
                 WHERE id = $1`;
