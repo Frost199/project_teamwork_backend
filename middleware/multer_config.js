@@ -1,4 +1,5 @@
 const multer = require('multer');
+const path  = require('path');
 
 const MIME_TYPES = {
   'image/gif': 'gif',
@@ -6,7 +7,7 @@ const MIME_TYPES = {
 
 const storage = multer.diskStorage({
   destination: (req, file, callback) => {
-    callback(null, 'gifs/');
+    callback(null, process.cwd() + '/gifs');
   },
 
   filename: (req, file, callback) => {

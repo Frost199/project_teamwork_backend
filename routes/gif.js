@@ -8,8 +8,11 @@ const multer = require('../middleware/multer_config');
 
 const router = express.Router();
 
-//Create New thing
+//Create New gif
 router.post('/', auth.userAuth, validator.validatedInput('gifAdd'),
   multer, gifController.createGif);
+
+//Delete a gif
+router.delete('/:id', auth.userAuth, gifController.deleteGif);
 
 module.exports = router;
