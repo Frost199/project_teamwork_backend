@@ -4,7 +4,7 @@ const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const moment = require('moment');
 const fs = require('fs');
-const path  = require('path');
+const path = require('path');
 
 dotenv.config();
 moment().format();
@@ -33,9 +33,7 @@ exports.createGif = async (req, res, next) => {
 
   fileName = req.file.filename;
   let name = fileName.split('.gif')[0];
-
-  process.chdir('../');
-  const pathDir = path.resolve(path.join(process.cwd() + '/project_teamwork_backend/gifs/'));
+  const pathDir = path.resolve(path.join(process.cwd() + '/gifs'));
   cloudinary.uploader.upload(`${pathDir}/${fileName}`,
     { public_id: `teamwork/${name}`, tags: 'teamwork' })
     .then((image) => {
@@ -60,8 +58,10 @@ exports.createGif = async (req, res, next) => {
       const result = db.query(conn, values);
       result
         .then((val) => {
-          const { imageurl: imgUrl, id: id, title: imgTitle,
-            created_date: createdDate, } = val.rows[0];
+          const {
+            imageurl: imgUrl, id: id, title: imgTitle,
+            created_date: createdDate,
+          } = val.rows[0];
 
           return res.status(201).json({
             status: 'success',
@@ -76,5 +76,55 @@ exports.createGif = async (req, res, next) => {
         })
         .catch(e => console.log(e));
     })
-    .catch(e => console.log('Error: ', e.message));
+    .catch(e => console.log(e));
+};
+
+exports.deleteGif = (req, res, next) => {
+  const parameterId = req.params.id;
+  const conn = `SELECT *
+                FROM Gif
+                WHERE id = $1`;
+  const result = db.query(conn, [parameterId]);
+  result
+    .then((dbResult) => {
+      if (!dbResult.rows.length)
+        return res.status(404).json({
+          status: 'error',
+          error: 'Gif not found!',
+        });
+      const { image_public_id: imagePublicId, id: gifId } = dbResult.rows[0];
+      cloudinary.uploader.destroy(imagePublicId)
+        .then(() => {
+          const newConn = `DELETE
+                           FROM Gif
+                           WHERE id = $1`;
+          const newResult = db.query(newConn, [gifId]);
+          newResult
+            .then(() =>
+              res.status(200).json({
+                status: 'success',
+                data: {
+                  gifId: gifId,
+                  message: 'gif post successfully deleted',
+                },
+              }))
+            .catch(() =>
+              res.status(500).json({
+                status: 'error',
+                error: 'Cannot delete article',
+              }));
+        })
+        .catch(() =>
+          res.status(404).json({
+            status: 'error',
+            error: 'Image not found on server',
+          })
+        );
+    })
+    .catch(() =>
+      res.status(500).json({
+        status: 'error',
+        error: 'Cannot delete article',
+      })
+    );
 };
