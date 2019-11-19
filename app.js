@@ -8,6 +8,7 @@ const path = require('path');
 const userRoutes = require('./routes/user');
 const gifRoutes = require('./routes/gif');
 const articleRoutes = require('./routes/article');
+const feedRoutes = require('./routes/feed');
 
 dotenv.config();
 const app = express();
@@ -31,5 +32,6 @@ app.use('/gifs', express.static(path.join(__dirname, 'gifs')));
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/gifs', gifRoutes);
 app.use('/api/v1/articles', articleRoutes);
+app.use('/api/v1/feed', feedRoutes);
 
 module.exports = app;
