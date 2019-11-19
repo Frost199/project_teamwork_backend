@@ -11,6 +11,9 @@ const router = express.Router();
 router.post('/', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.createArticle);
 
+//Get single Article
+router.get('/:id', auth.userAuth, articleController.getSingleArticle);
+
 //Modify Article
 router.patch('/:id', auth.userAuth, validator.validatedInput('articleAdd'),
   articleController.modifyArticle);

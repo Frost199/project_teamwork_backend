@@ -14,9 +14,10 @@ describe('check if user can', () => {
   });
 
   afterEach(async () => {
-    await  server.serverExport.close();
+    await server.serverExport.close();
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    await db.query(`DELETE FROM Article`);
+    await db.query(`DELETE
+                    FROM Article`);
   });
 
   describe('POST /api/v1/articles', () => {
@@ -95,7 +96,7 @@ describe('check if user can', () => {
       const token = loginResponse.body.data.token;
       const articleResponse = await request(server.serverExport)
         .post('/api/v1/articles')
-        .set({ Authorization: 'jwt ' + token })
+        .set({Authorization: 'jwt ' + token})
         .send({
           title: 'Hello Sports',
           article: 'Write on sports, its very cool',
@@ -105,7 +106,7 @@ describe('check if user can', () => {
 
       const response = await request(server.serverExport)
         .patch(`/api/v1/articles/${articleId}`)
-        .set({ Authorization: 'jwt ' + token })
+        .set({Authorization: 'jwt ' + token})
         .send({
           title: 'Hi Madam',
           article: 'lets talk wigs',
@@ -124,17 +125,19 @@ describe('check if user can', () => {
           password: 'qwerty',
         });
       const token = loginResponse.body.data.token;
-      await request(server.serverExport)
+      const articleCreatedResponse = await request(server.serverExport)
         .post('/api/v1/articles')
-        .set({ Authorization: 'jwt ' + token })
+        .set({Authorization: 'jwt ' + token})
         .send({
           title: 'Hello Sports',
           article: 'Write on sports, its very cool',
         });
 
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
       const response = await request(server.serverExport)
-        .patch(`/api/v1/articles/5000`)
-        .set({ Authorization: 'jwt ' + token })
+        .patch(`/api/v1/articles/${articleIdFromResponse + 1}`)
+        .set({Authorization: 'jwt ' + token})
         .send({
           title: 'Hi Madam',
           article: 'lets talk wigs',
@@ -156,7 +159,7 @@ describe('check if user can', () => {
           password: 'qwerty',
         });
       const token = loginResponse.body.data.token;
-      await request(server.serverExport)
+      const articleCreatedResponse = await request(server.serverExport)
         .post('/api/v1/articles')
         .set({ Authorization: 'jwt ' + token })
         .send({
@@ -164,8 +167,10 @@ describe('check if user can', () => {
           article: 'Write on sports, its very cool',
         });
 
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
       const response = await request(server.serverExport)
-        .delete(`/api/v1/articles/5000`)
+        .delete(`/api/v1/articles/${articleIdFromResponse + 1}`)
         .set({ Authorization: 'jwt ' + token });
       expect(response.status).toBe(404);
       expect(response.body).toEqual(jasmine.objectContaining({
@@ -196,6 +201,102 @@ describe('check if user can', () => {
         .set({ Authorization: 'jwt ' + tokenToPost });
       expect(response.status).toBe(200);
       expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+  });
+
+  describe('GET /api/v1/articles/:id',  () => {
+
+    it('should throw a 404 error, article not found', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      const articleCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
+      const response = await request(server.serverExport)
+        .get(`/api/v1/articles/${parseInt(articleIdFromResponse) + 1}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should return comments for a valid article', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create an article
+      const token = loginResponse.body.data.token;
+      const articleCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
+      // Trying to paste a comment
+      const randRes = await request(server.serverExport)
+        .post(`/api/v1/articles/${articleIdFromResponse}/comment`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          comment: 'I will have to start with football',
+        });
+
+      // Fetch comment for the comment Id
+      const articleResponseWithId = await request(server.serverExport)
+        .get(`/api/v1/articles/${articleIdFromResponse}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(articleResponseWithId.status).toBe(200);
+      expect(articleResponseWithId.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+
+    it('should not return comments for a valid article', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create an article
+      const token = loginResponse.body.data.token;
+      const articleCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/articles')
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          title: 'Hello Sports',
+          article: 'Write on sports, its very cool',
+        });
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
+      // Fetch comment for the comment Id
+      const articleResponseWithId = await request(server.serverExport)
+        .get(`/api/v1/articles/${articleIdFromResponse}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(articleResponseWithId.status).toBe(200);
+      expect(articleResponseWithId.body).toEqual(jasmine.objectContaining({
         status: 'success',
       }));
     });
@@ -242,7 +343,7 @@ describe('check if user can', () => {
           password: 'qwerty',
         });
       const token = loginResponse.body.data.token;
-      await request(server.serverExport)
+      const articleCreatedResponse = await request(server.serverExport)
         .post('/api/v1/articles')
         .set({ Authorization: 'jwt ' + token })
         .send({
@@ -250,8 +351,10 @@ describe('check if user can', () => {
           article: 'Write on sports, its very cool',
         });
 
+      const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
+
       const response = await request(server.serverExport)
-        .post(`/api/v1/articles/5000/comment`)
+        .post(`/api/v1/articles/${articleIdFromResponse + 1}/comment`)
         .set({ Authorization: 'jwt ' + token })
         .send({
           comment: 'lets talk wigs',
@@ -281,7 +384,7 @@ describe('check if user can', () => {
         });
       const articleIdFromResponse = articleCreatedResponse.body.data.articleId;
 
-      // Trying to paste a null comment
+      // Trying to paste a comment
       const response = await request(server.serverExport)
         .post(`/api/v1/articles/${articleIdFromResponse}/comment`)
         .set({ Authorization: 'jwt ' + token })

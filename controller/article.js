@@ -1,4 +1,4 @@
-const jwt  = require('jsonwebtoken');
+const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
 const db = require('../util/db_query');
 const moment = require('moment');
@@ -31,7 +31,8 @@ exports.createArticle = (req, res, next) => {
   const title = req.body.title;
   const article = req.body.article;
 
-  const conn = `INSERT INTO Article (userId, title, article, created_date) VALUES ($1, $2, $3, $4) RETURNING *`;
+  const conn = `INSERT INTO Article (userId, title, article, created_date)
+                VALUES ($1, $2, $3, $4) RETURNING *`;
   const values = [
     userId,
     title,
@@ -43,20 +44,83 @@ exports.createArticle = (req, res, next) => {
     .then((val) => {
       const { id: id, title: articleTitle, created_date: createdDate } = val.rows[0];
       return res.status(201).json({
-            status: 'success',
-            data: {
-              message: 'Article successfully posted',
-              articleId: id,
-              createdOn: createdDate,
-              title: articleTitle,
-            },
-          });
+        status: 'success',
+        data: {
+          message: 'Article successfully posted',
+          articleId: id,
+          createdOn: createdDate,
+          title: articleTitle,
+        },
+      });
     })
     .catch(e =>
       res.status(500).json({
         status: 'error',
         error: 'Cannot store article',
       }));
+};
+
+exports.getSingleArticle = (req, res, next) => {
+  const parameterId = req.params.id;
+  const conn = `SELECT *
+                FROM Article
+                WHERE id = $1`;
+  const result = db.query(conn, [parameterId]);
+  result
+    .then((value) => {
+      if (!value.rows.length)
+        return res.status(404).json({
+          status: 'error',
+          error: 'Article not found!',
+        });
+      const {
+        id: articleId, title: articleTitle,
+        article: articleContent, created_date: articleCreatedOn,
+      } = value.rows[0];
+      const articleCommentConn = `SELECT id           as "commentId",
+                                         comment      as "comment",
+                                         userid       as "authorId",
+                                         created_date as "createdOn"
+                                  FROM ArticleComment
+                                  WHERE articleId = $1`;
+      const commentResult = db.query(articleCommentConn, [articleId]);
+      commentResult
+        .then((value) => {
+          if (!value.rows.length)
+            return res.status(200).json({
+              status: 'success',
+              data: {
+                id: articleId,
+                createdOn: articleCreatedOn,
+                title: articleTitle,
+                article: articleContent,
+                comments: [],
+              },
+            });
+          return res.status(200).json({
+            status: 'success',
+            data: {
+              id: articleId,
+              createdOn: articleCreatedOn,
+              title: articleTitle,
+              article: articleContent,
+              comments: value.rows,
+            },
+          });
+        })
+        .catch((e) => {
+          res.status(500).json({
+            status: 'error',
+            error: 'Database Error',
+          });
+        });
+    })
+    .catch((e) => {
+      res.status(500).json({
+        status: 'error',
+        error: 'Database Error',
+      });
+    });
 };
 
 exports.modifyArticle = (req, res, next) => {
@@ -88,7 +152,10 @@ exports.modifyArticle = (req, res, next) => {
           status: 'error',
           error: 'Article not found!',
         });
-      const newConn = `UPDATE Article SET title = $1, article = $2  WHERE id = $3 RETURNING *`;
+      const newConn = `UPDATE Article
+                       SET title   = $1,
+                           article = $2
+                       WHERE id = $3 RETURNING *`;
       const parameterValues = [
         title,
         article,
@@ -137,7 +204,9 @@ exports.deleteArticle = (req, res, next) => {
           status: 'error',
           error: 'Article not found!',
         });
-      const newConn = `DELETE FROM Article WHERE id= $1`;
+      const newConn = `DELETE
+                       FROM Article
+                       WHERE id = $1`;
       const parameterValues = [
         dbResult.rows[0].id,
       ];
@@ -159,9 +228,9 @@ exports.deleteArticle = (req, res, next) => {
     })
     .catch(() => {
       res.status(500).json({
-            status: 'error',
-            error: 'Cannot delete article',
-          });
+        status: 'error',
+        error: 'Cannot delete article',
+      });
     });
 };
 
@@ -184,7 +253,7 @@ exports.commentArticle = (req, res, next) => {
   const decodeToken = jwt.verify(token, JWT_SECRET_TOKEN);
 
   const userId = decodeToken.userId;
-  const comment  = req.body.comment;
+  const comment = req.body.comment;
 
   // Get Article from the database
   const parameterId = req.params.id;
@@ -200,8 +269,9 @@ exports.commentArticle = (req, res, next) => {
           error: 'Article not found!',
         });
       const { id: articleId, title: articleTitle, article: article } = value.rows[0];
-      const newConn = `INSERT INTO ArticleComment (userId, articleId, 
-                            comment, created_date) VALUES ($1, $2, $3, $4) RETURNING *`;
+      const newConn = `INSERT INTO ArticleComment (userId, articleId,
+                                                   comment, created_date)
+                       VALUES ($1, $2, $3, $4) RETURNING *`;
       const newConnValues = [
         userId,
         articleId,
@@ -211,8 +281,10 @@ exports.commentArticle = (req, res, next) => {
       const commentResult = db.query(newConn, newConnValues);
       commentResult
         .then((responseCommentResult) => {
-          const { id: commentId, comment: comment,
-            created_date: createdOn, } = responseCommentResult.rows[0];
+          const {
+            id: commentId, comment: comment,
+            created_date: createdOn,
+          } = responseCommentResult.rows[0];
           return res.status(201).json({
             status: 'success',
             data: {
