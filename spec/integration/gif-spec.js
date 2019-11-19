@@ -18,7 +18,7 @@ describe('check if user can', () => {
   afterEach(async () => {
     await  server.serverExport.close();
     jasmine.DEFAULT_TIMEOUT_INTERVAL = originalTimeout;
-    await db.query(`DELETE FROM Article`);
+    await db.query(`DELETE FROM Gif`);
   });
 
   describe('/api/v1/gifs/', () => {
