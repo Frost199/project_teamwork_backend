@@ -231,4 +231,94 @@ describe('check if user can', () => {
       }));
     });
   });
+
+  describe('GET /api/v1/gifs/:id',  () => {
+
+    it('should throw a 404 error, gif not found', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+      const token = loginResponse.body.data.token;
+      const gifCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/gifs')
+        .set({ Authorization: 'jwt ' + token })
+        .field('title', 'meet the simpson')
+        .attach('gif', fileToUpload);
+
+      const gifIdFromResponse = gifCreatedResponse.body.data.gifId;
+
+      const response = await request(server.serverExport)
+        .get(`/api/v1/gifs/${parseInt(gifIdFromResponse) + 1}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(response.status).toBe(404);
+      expect(response.body).toEqual(jasmine.objectContaining({
+        status: 'error',
+      }));
+    });
+
+    it('should return comments for a valid gif', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create a gif
+      const token = loginResponse.body.data.token;
+      const gifCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/gifs')
+        .set({ Authorization: 'jwt ' + token })
+        .field('title', 'meet the simpson')
+        .attach('gif', fileToUpload);
+      const gifIdFromResponse = gifCreatedResponse.body.data.gifId;
+
+      // Trying to paste a comment
+      await request(server.serverExport)
+        .post(`/api/v1/gifs/${gifIdFromResponse}/comment`)
+        .set({ Authorization: 'jwt ' + token })
+        .send({
+          comment: 'I will have to start with football',
+        });
+
+      // Fetch comment for the comment Id
+      const gifResponseWithId = await request(server.serverExport)
+        .get(`/api/v1/gifs/${gifIdFromResponse}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(gifResponseWithId.status).toBe(200);
+      expect(gifResponseWithId.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+
+    it('should not return comments for a valid gif', async () => {
+      const loginResponse = await request(server.serverExport)
+        .post('/api/v1/auth/signin')
+        .send({
+          email: 'emmaldini12@gmail.com',
+          password: 'qwerty',
+        });
+
+      //create a gif
+      const token = loginResponse.body.data.token;
+      const gifCreatedResponse = await request(server.serverExport)
+        .post('/api/v1/gifs')
+        .set({ Authorization: 'jwt ' + token })
+        .field('title', 'meet the simpson')
+        .attach('gif', fileToUpload);
+      const gifIdFromResponse = gifCreatedResponse.body.data.gifId;
+
+      // Fetch comment for the comment Id
+      const gifResponseWithId = await request(server.serverExport)
+        .get(`/api/v1/gifs/${gifIdFromResponse}`)
+        .set({ Authorization: 'jwt ' + token });
+      expect(gifResponseWithId.status).toBe(200);
+      expect(gifResponseWithId.body).toEqual(jasmine.objectContaining({
+        status: 'success',
+      }));
+    });
+  });
 });
