@@ -1,6 +1,8 @@
 const express = require('express');
 const pg = require('pg');
 const dotenv = require('dotenv');
+const helmet = require('helmet');
+const compression = require('compression');
 const bodyParser = require('body-parser');
 const path = require('path');
 
@@ -28,6 +30,8 @@ app.use((req, res, next) => {
 });
 
 app.use(bodyParser.json());
+app.use(helmet());
+app.use(compression());
 app.use('/gifs', express.static(path.join(__dirname, 'gifs')));
 app.use('/api/v1/auth', userRoutes);
 app.use('/api/v1/gifs', gifRoutes);
