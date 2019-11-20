@@ -116,4 +116,4 @@ For a test database, you use the NODE_ENV=testing
 I'm Emmanuel from Enugu in Nigeria, this javascript project has been awesome.
 
 ###### Documentation
-The documentation can be found [here]: https://documenter.getpostman.com/view/7381258/SW7aX7mg
+The documentation can be found [here](https://documenter.getpostman.com/view/7381258/SW7aX7mg)
