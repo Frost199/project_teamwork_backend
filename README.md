@@ -30,19 +30,21 @@ and also have fun while at work.
 * create ```.env``` inside the ```project_teamwork_backend``` folder which is the base folder, then add the contents
 below
         
-   ```TEAMWORK_DATABASE_URL=postgres://iopnxytv:gYVfD_df_4vqLi87UTx6u8JPKz8jkhdF@salt.db.elephantsql.com:5432/iopnxytv
-      TEAMWORK_DATABASE_URL_TEST=postgres://wubncfbz:8t0VtXbVQQmAIfnmax182SETdN6RgLmp@salt.db.elephantsql.com:5432/wubncfbz
-      CLOUDINARY_URL=cloudinary://983466679252696:aFzGcpTIsBBgm23XbcL74w5EOGY@manny/
-      TEAMWORK_DATABASE_USER=iopnxytv
-      TEAMWORK_DATABASE_HOST=salt.db.elephantsql.com
-      TEAMWORK_DATABASE=iopnxytv
-      TEAMWORK_DATABASE_PASSWORD=gYVfD_df_4vqLi87UTx6u8JPKz8jkhdF
-      TEAMWORK_DATABASE_USER_TEST=wubncfbz
-      TEAMWORK_DATABASE_HOST_TEST=salt.db.elephantsql.com
-      TEAMWORK_DATABASE_TEST=wubncfbz
-      TEAMWORK_DATABASE_PASSWORD_TEST=8t0VtXbVQQmAIfnmax182SETdN6RgLmp
-      JWT_TOKEN_SECRET=asknfjnuvjdvjdnsjnaoniwenqndnoanncoo2346368381yva2f5c815c03053b089ace56bc6b4e57704d23ebff7e0a+a837995fc8f531be1835f76cc1087c922a4c9d197b4d4cafc6c
+   ```TEAMWORK_DATABASE_URL=XXXXXXXXXX
+      TEAMWORK_DATABASE_URL_TEST=XXXXXXXXXX
+      CLOUDINARY_URL=XXXXXXXXXX
+      TEAMWORK_DATABASE_USER=XXXXXXXXXX
+      TEAMWORK_DATABASE_HOST=XXXXXXXXXX
+      TEAMWORK_DATABASE=XXXXXXXXXX
+      TEAMWORK_DATABASE_PASSWORD=XXXXXXXXXX
+      TEAMWORK_DATABASE_USER_TEST=XXXXXXXXXX
+      TEAMWORK_DATABASE_HOST_TEST=XXXXXXXXXX
+      TEAMWORK_DATABASE_TEST=XXXXXXXXXX
+      TEAMWORK_DATABASE_PASSWORD_TEST=XXXXXXXXXX
+      JWT_TOKEN_SECRET=XXXXXXXXXX
   ```
+
+__NOTE__ : REMEMBER TO REPLACE XXXXXXXXXX WITH YOUR CONFIG.
     
 ##### test
 ###### Using env
@@ -114,4 +116,4 @@ For a test database, you use the NODE_ENV=testing
 I'm Emmanuel from Enugu in Nigeria, this javascript project has been awesome.
 
 ###### Documentation
-      The documentation can be found [here](https://documenter.getpostman.com/view/7381258/SW7aX7mg)
+      The documentation can be found [here]: https://documenter.getpostman.com/view/7381258/SW7aX7mg
