@@ -15,6 +15,9 @@ router.post('/', auth.userAuth, validator.validatedInput('gifAdd'),
 //Delete a gif
 router.delete('/:id', auth.userAuth, gifController.deleteGif);
 
+//get a gif
+router.get('/:id', auth.userAuth, gifController.getSingleGif);
+
 //Comment on Gif
 router.post('/:id/comment', auth.userAuth, validator.validatedInput('gifComment'),
   gifController.commentGif);

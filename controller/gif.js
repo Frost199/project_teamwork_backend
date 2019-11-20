@@ -80,6 +80,70 @@ exports.createGif = async (req, res, next) => {
     .catch(e => console.log(e));
 };
 
+exports.getSingleGif = (req, res, next) => {
+  const parameterId = req.params.id;
+  const conn = `SELECT *
+                FROM Gif
+                WHERE id = $1`;
+  const result = db.query(conn, [parameterId]);
+  result
+    .then((value) => {
+      if (!value.rows.length)
+        return res.status(404).json({
+          status: 'error',
+          error: 'Gif not found!',
+        });
+      const {
+        id: gifId, title: gifTitle,
+        imageurl: gifUrl, created_date: gifCreatedOn,
+      } = value.rows[0];
+      const gifCommentConn = `SELECT id           as "commentId",
+                                     comment      as "comment",
+                                     userid       as "authorId",
+                                     created_date as "createdOn"
+                              FROM GifComment
+                              WHERE gifId = $1`;
+
+      const commentResult = db.query(gifCommentConn, [gifId]);
+      commentResult
+        .then((value) => {
+          if (!value.rows.length)
+            return res.status(200).json({
+              status: 'success',
+              data: {
+                id: gifId,
+                createdOn: gifCreatedOn,
+                title: gifTitle,
+                url: gifUrl,
+                comments: [],
+              },
+            });
+          return res.status(200).json({
+            status: 'success',
+            data: {
+              id: gifId,
+              createdOn: gifCreatedOn,
+              title: gifTitle,
+              url: gifUrl,
+              comments: value.rows,
+            },
+          });
+        })
+        .catch((e) => {
+          res.status(500).json({
+            status: 'error',
+            error: 'Database Error',
+          });
+        });
+    })
+    .catch((e) => {
+      res.status(500).json({
+        status: 'error',
+        error: 'Database Error',
+      });
+    });
+};
+
 exports.deleteGif = (req, res, next) => {
   const parameterId = req.params.id;
   const conn = `SELECT *
@@ -112,7 +176,7 @@ exports.deleteGif = (req, res, next) => {
             .catch(() =>
               res.status(500).json({
                 status: 'error',
-                error: 'Cannot delete article',
+                error: 'Cannot delete gif',
               }));
         })
         .catch(() =>
@@ -125,7 +189,7 @@ exports.deleteGif = (req, res, next) => {
     .catch(() =>
       res.status(500).json({
         status: 'error',
-        error: 'Cannot delete article',
+        error: 'Cannot delete gif',
       })
     );
 };
@@ -149,7 +213,7 @@ exports.commentGif = (req, res, next) => {
   const decodeToken = jwt.verify(token, JWT_SECRET_TOKEN);
 
   const userId = decodeToken.userId;
-  const comment  = req.body.comment;
+  const comment = req.body.comment;
 
   // Get Gif from the database
   const parameterId = req.params.id;
@@ -165,8 +229,9 @@ exports.commentGif = (req, res, next) => {
           error: 'Gif not found!',
         });
       const { id: gifId, title: gifTitle, } = value.rows[0];
-      const newConn = `INSERT INTO GifComment (userId, gifId, 
-                            comment, created_date) VALUES ($1, $2, $3, $4) RETURNING *`;
+      const newConn = `INSERT INTO GifComment (userId, gifId,
+                                               comment, created_date)
+                       VALUES ($1, $2, $3, $4) RETURNING *`;
       const newConnValues = [
         userId,
         gifId,
@@ -176,8 +241,10 @@ exports.commentGif = (req, res, next) => {
       const gifResult = db.query(newConn, newConnValues);
       gifResult
         .then((responseGifResult) => {
-          const { id: commentId, comment: comment,
-            created_date: createdOn, } = responseGifResult.rows[0];
+          const {
+            id: commentId, comment: comment,
+            created_date: createdOn,
+          } = responseGifResult.rows[0];
           return res.status(201).json({
             status: 'success',
             data: {
