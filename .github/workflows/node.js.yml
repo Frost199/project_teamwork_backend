@@ -1,0 +1,62 @@
+# This workflow will do a clean install of node dependencies, build the source code and run tests across different versions of node
+# For more information see: https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+
+name: Node.js CI
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x]
+    
+    services:
+      postgres:
+        image: postgres:10.8
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: postgres
+        ports:
+        - 5432:5432
+        # needed because the postgres container does not provide a healthcheck
+        options: --health-cmd pg_isready --health-interval 10s --health-timeout 5s --health-retries 5
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+      env:
+        CC_TEST_REPORTER_ID: 090889fc04d641494d657317c3394d44e9f32bbb5993d290d30d40e8b0e363cb
+        COVERALLS_REPO_TOKEN: 9QeYZZ3d5p1HAODTrPxSxioqSsHreONXv
+        TEAMWORK_DATABASE_USER: iopnxytv
+        TEAMWORK_DATABASE_HOST: salt.db.elephantsql.com
+        TEAMWORK_DATABASE: iopnxytv
+        TEAMWORK_DATABASE_PASSWORD: gYVfD_df_4vqLi87UTx6u8JPKz8jkhdF
+        TEAMWORK_DATABASE_USER_TEST: wubncfbz
+        TEAMWORK_DATABASE_HOST_TEST: salt.db.elephantsql.com
+        TEAMWORK_DATABASE_TEST: wubncfbz
+        TEAMWORK_DATABASE_PASSWORD_TEST: 8t0VtXbVQQmAIfnmax182SETdN6RgLmp
+        NODE_ENV: testing
+        JWT_TOKEN_SECRET: asknfjnuvjdvjdnsjnaoniwenqndnoanncoo2346368381yva2f5c815c03053b089ace56bc6b4e57704d23ebff7e0a+a837995fc8f531be1835f76cc1087c922a4c9d197b4d4cafc6c
+        CLOUDINARY_URL: cloudinary://983466679252696:aFzGcpTIsBBgm23XbcL74w5EOGY@manny/
+
+    - name: Install dependencies
+      run: npm install && npm install nyc -g
+    - run: psql -c 'create database iopnxytv_test;' -U postgres
+    - run: curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+    - run: chmod +x ./cc-test-reporter
+    - run: ./cc-test-reporter before-build
+    - run: npm ci
+    - run: npm run build --if-present
+    - run: npm test
